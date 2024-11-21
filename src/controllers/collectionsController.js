@@ -6,6 +6,8 @@ import { formatResponse, handleError } from "../helpers/response.js";
  */
 export const index = async (req, res) => {
     try {
+        const { page = 1, limit = 10 } = req.query;
+        const offset = (page - 1) * limit;
         const collections = await db.Collection.findAll({
             include: [
                 {
@@ -19,6 +21,8 @@ export const index = async (req, res) => {
                     attributes: ["id", "title", "category"],
                 },
             ],
+            limit: parseInt(limit, 10),
+            offset: parseInt(offset, 10),
         });
         return formatResponse(res, 200, "Collections retrieved successfully", collections);
     } catch (error) {
@@ -118,6 +122,47 @@ export const destroy = async (req, res) => {
         handleError(res, error);
     }
 };
+
+/**
+ * Get all recommendations of a collection
+ */
+export const showRecommendations = async (req, res) => {
+    try {
+        const { collection_id } = req.params;
+        const { page = 1, limit = 10 } = req.query;
+        const offset = (page - 1) * limit;
+
+        const collection = await db.Collection.findByPk(collection_id);
+        if (!collection) {
+            return formatResponse(res, 404, "Collection not found");
+        }
+
+        const { count, rows: recommendations } = await db.Recommendation.findAndCountAll({
+            include: [
+                {
+                    model: db.Collection,
+                    as: "collections",
+                    where: { id: collection_id },
+                    through: { attributes: [] },
+                },
+            ],
+            limit: parseInt(limit, 10),
+            offset: parseInt(offset, 10),
+        });
+
+        const totalPages = Math.ceil(count / limit);
+
+        return formatResponse(res, 200, "Recommendations retrieved successfully", {
+            totalItems: count,
+            totalPages,
+            currentPage: parseInt(page, 10),
+            recommendations,
+        });
+    } catch (error) {
+        handleError(res, error);
+    }
+};
+
 
 /**
  * Add a recommendation to a collection

@@ -16,6 +16,21 @@ const collectionsRouter = express.Router();
  *   get:
  *     summary: Get all collections
  *     tags: [Collections]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: The page number to retrieve
+ *       - in: query
+ *         name: limit
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: The number of items per page
  *     responses:
  *       200:
  *         description: List of all collections
@@ -129,12 +144,53 @@ collectionsRouter.put("/:id", collectionsController.update);
  */
 collectionsRouter.delete("/:id", collectionsController.destroy);
 
+
+/**
+ * @swagger
+ * tags:
+ *   name: Collections & Recommendations 
+ *   description: API for managing collections & recommendations 
+ */
+
+/**
+ * @swagger
+ * /collections/{collection_id}/recommendations:
+ *   get:
+ *     summary: Get recommendations for a collection
+ *     tags: [Collections & Recommendations ]
+ *     parameters:
+ *       - in: path
+ *         name: collection_id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the collection
+ *       - in: query
+ *         name: page
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: The page number to retrieve
+ *       - in: query
+ *         name: limit
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: The number of items per page
+ *     responses:
+ *       200:
+ *         description: List of recommendations for the collection
+ */
+ collectionsRouter.get("/:collection_id/recommendations", collectionsController.showRecommendations);
+
 /**
  * @swagger
  * /collections/{collection_id}/recommendations/{recommendation_id}:
  *   post:
  *     summary: Add a recommendation to a collection
- *     tags: [Collections]
+ *     tags: [Collections & Recommendations ]
  *     parameters:
  *       - in: path
  *         name: collection_id
@@ -164,7 +220,7 @@ collectionsRouter.post(
  * /collections/{collection_id}/recommendations/{recommendation_id}:
  *   delete:
  *     summary: Remove a recommendation from a collection
- *     tags: [Collections]
+ *     tags: [Collections & Recommendations ]
  *     parameters:
  *       - in: path
  *         name: collection_id
