@@ -10,7 +10,7 @@ const options = {
             description: 'API documentation for managing user recommendations and collections',
         },
     },
-    apis: ['./src/routes/*.js'], // Adjust to match your route files
+    apis: ['./src/routes/*.js'],
 };
 
 const swaggerSpec = swaggerJsDoc(options);

@@ -1,8 +1,9 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import db from './models/index.js';  // Adjusted to match ES6 import
-
+import db from './models/index.js';
+import collectionsRouter from "./routes/collectionsRoutes.js";
 import setupSwaggerDocs from './config/swagger.js';
+import recommendationsRouter from './routes/recommendationsRoutes.js';
 
 dotenv.config();
 
@@ -20,6 +21,12 @@ await db.sequelize
     .then(() => console.log('Database connected!'))
     .catch((err) => {console.error('Error connecting to database:', err.message); process.exit(1)});
 
+
+// Collections routes
+app.use("/collections", collectionsRouter);
+
+// Recommendations routes
+app.use("/recommendations", recommendationsRouter);
 
 //Start
 const PORT = process.env.PORT || 3000;
